@@ -17,14 +17,11 @@
  * MA 02110-1301, USA.
  */
 
-#include <stdio.h>
-#include <stdint.h>
 #include <fcntl.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <unistd.h>
-#include <errno.h>
 #include <sys/ioctl.h>
-#include <string.h>
+#include <cstring>
 
 #include <linux/spi/spidev.h>
 
@@ -76,7 +73,7 @@ bool SPI::setMode(uint8_t p_mode){
 
 }
 
-int SPI::xfer(uint8_t *p_txbuffer, uint8_t p_txlen, uint8_t *p_rxbuffer, uint8_t p_rxlen){
+int SPI::xfer(const uint8_t *p_txbuffer, uint8_t p_txlen, const uint8_t *p_rxbuffer, uint8_t p_rxlen) const{
     struct spi_ioc_transfer spi_message[1];
     memset(spi_message, 0, sizeof(spi_message));
     
@@ -86,7 +83,7 @@ int SPI::xfer(uint8_t *p_txbuffer, uint8_t p_txlen, uint8_t *p_rxbuffer, uint8_t
     return ioctl(m_spifd, SPI_IOC_MESSAGE(1), spi_message);
 }
 
-int SPI::write(uint8_t *p_txbuffer,uint8_t p_txlen){
+int SPI::write(const uint8_t *p_txbuffer,uint8_t p_txlen){
     struct spi_ioc_transfer spi_message[1];
     memset(spi_message, 0, sizeof(spi_message));
     spi_message[0].tx_buf = (unsigned long)p_txbuffer;
@@ -96,7 +93,7 @@ int SPI::write(uint8_t *p_txbuffer,uint8_t p_txlen){
 
 }
 
-int SPI::read(uint8_t *p_rxbuffer,uint8_t p_rxlen){
+int SPI::read(const uint8_t *p_rxbuffer,uint8_t p_rxlen){
     struct spi_ioc_transfer spi_message[1];
     memset(spi_message, 0, sizeof(spi_message));
     
@@ -107,9 +104,9 @@ int SPI::read(uint8_t *p_rxbuffer,uint8_t p_rxlen){
 
 bool SPI::begin(){
     /* open spidev device */
-    if (m_open == true )
+    if (m_open)
        return true;
-    if (m_spidev == NULL)
+    if (m_spidev == nullptr)
        return false;
     m_spifd = open(m_spidev, O_RDWR);
   
@@ -153,23 +150,23 @@ bool SPI::begin(){
   
 }
 SPI::SPI(const char * p_spidev){
-  m_spidev = NULL;
-  if (p_spidev != NULL ){
+  m_spidev = nullptr;
+  if (p_spidev != nullptr ){
       m_spidev = (char *)malloc(strlen(p_spidev)+1);
-      if (m_spidev != NULL) 
+      if (m_spidev != nullptr)
          strcpy(m_spidev,p_spidev);
   }
    m_open = false;
 
 }
 SPI::SPI(const char * p_spidev, spi_config_t *p_spi_config){
-  m_spidev = NULL;
-  if (p_spidev != NULL ){
+  m_spidev = nullptr;
+  if (p_spidev != nullptr ){
       m_spidev = (char *)malloc(strlen(p_spidev)+1);
-      if (m_spidev != NULL) 
+      if (m_spidev != nullptr)
          strcpy(m_spidev,p_spidev);
   }
-  if (p_spi_config != NULL){
+  if (p_spi_config != nullptr){
 	memcpy(&m_spiconfig,p_spi_config,sizeof(spi_config_t));
      }
   else {
@@ -183,9 +180,9 @@ SPI::SPI(const char * p_spidev, spi_config_t *p_spi_config){
 }
 
 SPI::~SPI(){
-  if (m_spidev != NULL ) {
+  if (m_spidev != nullptr ) {
 	free(m_spidev);
-	m_spidev = NULL;
+	m_spidev = nullptr;
   }
   if (m_open)
       close(m_spifd);
@@ -193,7 +190,7 @@ SPI::~SPI(){
 
 
 bool SPI::setConfig(spi_config_t *p_spi_config){
-  if (p_spi_config != NULL){
+  if (p_spi_config != nullptr){
 	memcpy(&m_spiconfig,p_spi_config,sizeof(spi_config_t));
         if (m_open){
          /* Set SPI_POL and SPI_PHA */
@@ -231,6 +228,11 @@ bool SPI::setConfig(spi_config_t *p_spi_config){
   return false;
 
 }
+
+ bool SPI::end()
+ {
+     return false;
+ }
 
 
 

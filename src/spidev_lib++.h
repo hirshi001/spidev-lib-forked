@@ -22,7 +22,7 @@
 #define _SPI_LIB_HPP
 #endif 
 
-#include <stdint.h>
+#include <cstdint>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -44,8 +44,8 @@ typedef struct {
 class SPI{
 private:
 char *m_spidev;
-int m_spifd;
-spi_config_t m_spiconfig;
+int m_spifd{};
+spi_config_t m_spiconfig{};
 bool m_open;
 public:
         SPI(const char * p_spidev);
@@ -53,9 +53,9 @@ public:
         ~SPI();
         bool begin();
         bool end();
-        int read(uint8_t *p_rxbuffer,uint8_t p_rxlen);
-        int write(uint8_t *p_txbuffer,uint8_t p_txlen);
-        int xfer(uint8_t *p_txbuffer, uint8_t p_txlen, uint8_t *p_rxbuffer, uint8_t p_rxlen);
+        int read(const uint8_t *p_rxbuffer,uint8_t p_rxlen);
+        int write(const uint8_t *p_txbuffer,uint8_t p_txlen);
+        int xfer(const uint8_t *p_txbuffer, uint8_t p_txlen, const uint8_t *p_rxbuffer, uint8_t p_rxlen) const;
         bool setSpeed(uint32_t p_speed);
         bool setMode(uint8_t p_mode);
         bool setBitPerWord(uint8_t p_bit);
